@@ -24,23 +24,29 @@ public class TetronimoController : MonoBehaviour {
 
     private bool placed;
 
-    int[,] tetExample = new int[,]  {  { 1, 1, 1, 1 },
-                                       { 0, 0, 0, 0 },
-                                       { 0, 0, 0, 0 },
-                                       { 0, 0, 0, 0 } };
+    int[,] lineRotation1 = new int[,]  {  { 1, 1, 1, 1 },
+                                          { 0, 0, 0, 0 },
+                                          { 0, 0, 0, 0 },
+                                          { 0, 0, 0, 0 } };
+
+    int[,] lineRotation2 = new int[,]  {  { 1, 0, 0, 0 },
+                                          { 1, 0, 0, 0 },
+                                          { 1, 0, 0, 0 },
+                                          { 1, 0, 0, 0 } };
+
+    int[,] currentRotation;
 
     List<GameObject> renderedBlocks = new List<GameObject>();
 
     // Use this for initialization
     void Start () {
-
 		game = GameObject.Find ("Game").GetComponent<GameController> ();
+        currentRotation = lineRotation1;
         GetComponent<SpriteRenderer>().sprite = spriteI;
         gridX = startX;
         gridY = startY;
 
         updateRenderedPosition();
-        game.gridScan();
     }
 
     public void place()
@@ -49,13 +55,14 @@ public class TetronimoController : MonoBehaviour {
         {
             for (int i = 0; i < 4; i++)
             {
-                if (tetExample[j, i] == 1)
+                if (currentRotation[j, i] == 1)
                 {
                     game.grid[gridX + i, gridY + j] = 1;
                 }
             }
         }
         game.spawnTetronimo();
+        game.gridScan();
         Destroy(this.gameObject);
     }
 
@@ -65,11 +72,47 @@ public class TetronimoController : MonoBehaviour {
         {
             for (int i = 0; i < 4; i++)
             {
-                if (tetExample[j, i] == 1)
+                if (currentRotation[j, i] == 1)
                 {
-                    if (gridY + 1 > game.noOfCellsY - 1 || game.grid[gridX, gridY + 1] == 1)
+                    if (gridY + j + 1 > game.noOfCellsY - 1 || game.grid[gridX + i, gridY + j + 1] > 0)
                     {
                         print("PLACE!");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public bool canMoveRight()
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (currentRotation[j, i] == 1)
+                {
+                    if (gridX + 1 > game.noOfCellsX - 1 || game.grid[gridX + 1, gridY] > 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public bool canMoveLeft()
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (currentRotation[j, i] == 1)
+                {
+                    if (gridX == 0 || game.grid[gridX - 1, gridY] > 0)
+                    {
                         return false;
                     }
                 }
@@ -99,6 +142,38 @@ public class TetronimoController : MonoBehaviour {
             {
                 placed = true;
                 place();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (canMoveRight())
+            {
+                gridX++;
+                updateRenderedPosition();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            if (canMoveLeft())
+            {
+                gridX--;
+                updateRenderedPosition();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (currentRotation == lineRotation1)
+            {
+                currentRotation = lineRotation2;
+                updateRenderedPosition();
+            }
+
+            if (currentRotation == lineRotation2)
+            {
+                currentRotation = lineRotation1;
+                updateRenderedPosition();
             }
         }
     }

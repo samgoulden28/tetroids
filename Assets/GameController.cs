@@ -54,7 +54,22 @@ public class GameController : MonoBehaviour {
                 grid[x, y] = 0;
 			}
 		}
+        printGrid();
 	}
+
+    private void printGrid()
+    {
+        string s = "";
+        for (int y = 0; y < noOfCellsY; y++)
+        {
+            for (int x = 0; x < noOfCellsX; x++)
+            {
+                s += grid[x, y] + ", ";
+            }
+            s += "\n";
+        }
+        print(s);
+    }
 
     public void gridScan()
     {
@@ -63,7 +78,9 @@ public class GameController : MonoBehaviour {
             for (int y = 0; y < noOfCellsY; y++)
             {
                 if (grid[x, y] == 1) {
-                    Instantiate(blockPrefab, new Vector3(0.3f * x + 0.15f, -0.3f * y + 0.15f), Quaternion.identity);
+                    blocks.Add((GameObject)Instantiate(blockPrefab, new Vector3(0.3f * x + 0.15f, -0.3f * y + 0.15f), Quaternion.identity));
+                    grid[x, y] = 2;
+                    printGrid();
                 } else
                 {
                 }
