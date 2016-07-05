@@ -58,18 +58,14 @@ public class GameController : MonoBehaviour {
 
     public void gridScan()
     {
-        destroyGrid();
-        blocks = new List<GameObject>();
         for (int x = 0; x < noOfCellsX; x++)
         {
             for (int y = 0; y < noOfCellsY; y++)
             {
                 if (grid[x, y] == 1) {
-                    Debug.Log("grid " + x + ", " + y + " Filled ");
-                    blocks.Add((GameObject)Instantiate(blockPrefab, new Vector3(0.3f * x + 0.15f, -0.3f * y + 0.15f), Quaternion.identity));
+                    Instantiate(blockPrefab, new Vector3(0.3f * x + 0.15f, -0.3f * y + 0.15f), Quaternion.identity);
                 } else
                 {
-                    Debug.Log("grid " + x + ", " + y + " not filled ");
                 }
             }
         }
@@ -77,10 +73,6 @@ public class GameController : MonoBehaviour {
 
     public void destroyGrid()
     {
-        foreach(GameObject go in blocks)
-        {
-            Destroy(go);
-        }
     }
 
     public void spawnTetronimo()
