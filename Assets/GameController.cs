@@ -1,75 +1,94 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameController : MonoBehaviour {
 	public Vector3 startPosition;
 	public GameObject blockPrefab;
-	int noOfCellsX = 10;
-	int noOfCellsY = 18;
+    public GameObject tetronimoPrefab;
 
-	public GridCell[,] grid;
+    public int noOfCellsX = 10;
+	public int noOfCellsY = 18;
+
+	//public GridCell[,] grid;
 	float gridSize = 0.3f;
 
 	float gridWidth;
 	float gridHeight;
 
-	public GameObject[] tetronimos;
+	public List<GameObject> blocks = new List<GameObject>();
+
+    public int[,] grid;
 
 	// Use this for initialization
 	void Start () {
-		grid = new GridCell[noOfCellsX, noOfCellsY];
 		setupGrid ();
-		gridWidth = gridSize * noOfCellsX;
-		gridHeight = gridSize * noOfCellsY;
-		startPosition = new Vector3 (-0.15f, 0.15f, -2);
-		spawnTetronimo (0, 4);
-	}
+		spawnTetronimo ();
+    }
+
+    /* this gives us:
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     * 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+     */
 
 	private void setupGrid() {
+        grid = new int[noOfCellsX, noOfCellsY];
 		for (int x = 0; x < noOfCellsX; x++) {
 			for (int y = 0; y < noOfCellsY; y++) {
-				Vector3 position = new Vector3 (-0.15f + (0.3f * x), 0.15f + (0.3f * y), -2);
-				grid [x, y] = new GridCell (position);
+                grid[x, y] = 0;
 			}
 		}
 	}
 
-	public void spawnTetronimo(int x, int y) {
-		int r = Random.Range (0, tetronimos.Length);
-		GameObject go = (GameObject)GameObject.Instantiate (tetronimos [r], grid[x, y].getPosition(), Quaternion.identity); //This could be better if you have the start position as a member variable of the tetronimo
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	}
+    public void gridScan()
+    {
+        destroyGrid();
+        blocks = new List<GameObject>();
+        for (int x = 0; x < noOfCellsX; x++)
+        {
+            for (int y = 0; y < noOfCellsY; y++)
+            {
+                if (grid[x, y] == 1) {
+                    Debug.Log("grid " + x + ", " + y + " Filled ");
+                    blocks.Add((GameObject)Instantiate(blockPrefab, new Vector3(0.3f * x + 0.15f, -0.3f * y + 0.15f), Quaternion.identity));
+                } else
+                {
+                    Debug.Log("grid " + x + ", " + y + " not filled ");
+                }
+            }
+        }
+    }
 
-	public int gridPositionFromXPos(float xPos) {
-		return Mathf.FloorToInt ((xPos / gridWidth) * noOfCellsX);
-	}
+    public void destroyGrid()
+    {
+        foreach(GameObject go in blocks)
+        {
+            Destroy(go);
+        }
+    }
 
-	public int gridPositionFromYPos(float yPos) {
-		return Mathf.FloorToInt ((yPos / gridHeight) * noOfCellsY);
-	}
-}
+    public void spawnTetronimo()
+    {
+        Instantiate(tetronimoPrefab, Vector3.zero, Quaternion.identity);
+    }
 
-public class GridCell {
-	bool occupado = false;
-	GameObject cellObject;
-	Vector3 position;
-
-	public GridCell(Vector3 position) {
-		this.position = position;
-	}
-
-	public void assignObject(GameObject go) {
-		cellObject = go;
-	}
-
-	public GameObject getObject() {
-		return cellObject;
-	}
-
-	public Vector3 getPosition() {
-		return position;
+    // Update is called once per frame
+    void Update () {
 	}
 }
