@@ -4,9 +4,7 @@ using System.Collections.Generic;
 
 public class TetronimoController : MonoBehaviour {
 	GameController game;
-	bool controlling = true;
-	public float[] rotations;
-	int rotationCounter = 1;
+	int rotationCounter = 0;
 
 	public float[] speed = { 1f, 0.75f, 0.5f, 0.25f, 0.2f, 0.15f, 0.1f, 0.05f };
 	private float timeSinceLastDrop;
@@ -20,32 +18,19 @@ public class TetronimoController : MonoBehaviour {
     public int startX;
     public int startY;
 
-    public Sprite spriteI;
-
     private bool placed;
 
-    int[,] lineRotation1 = new int[,]  {  { 1, 1, 1, 1 },
-                                          { 0, 0, 0, 0 },
-                                          { 0, 0, 0, 0 },
-                                          { 0, 0, 0, 0 } };
+    public List<int[,]> tetronimo;
+    int[,] tetronimoCurrentRotation;
 
-    int[,] lineRotation2 = new int[,]  {  { 1, 0, 0, 0 },
-                                          { 1, 0, 0, 0 },
-                                          { 1, 0, 0, 0 },
-                                          { 1, 0, 0, 0 } };
-
-    int[,] currentRotation;
-
-    List<GameObject> renderedBlocks = new List<GameObject>();
+    public SpriteRenderer tetronimoRenderer;
 
     // Use this for initialization
     void Start () {
 		game = GameObject.Find ("Game").GetComponent<GameController> ();
-        currentRotation = lineRotation1;
-        GetComponent<SpriteRenderer>().sprite = spriteI;
+        tetronimoCurrentRotation = tetronimo[rotationCounter];
         gridX = startX;
         gridY = startY;
-
         updateRenderedPosition();
     }
 
@@ -55,7 +40,7 @@ public class TetronimoController : MonoBehaviour {
         {
             for (int i = 0; i < 4; i++)
             {
-                if (currentRotation[j, i] == 1)
+                if (tetronimoCurrentRotation[j, i] == 1)
                 {
                     game.grid[gridX + i, gridY + j] = 1;
                 }
@@ -72,7 +57,7 @@ public class TetronimoController : MonoBehaviour {
         {
             for (int i = 0; i < 4; i++)
             {
-                if (currentRotation[j, i] == 1)
+                if (tetronimoCurrentRotation[j, i] == 1)
                 {
                     if (gridY + j + 1 > game.noOfCellsY - 1 || game.grid[gridX + i, gridY + j + 1] > 0)
                     {
@@ -91,7 +76,7 @@ public class TetronimoController : MonoBehaviour {
         {
             for (int i = 0; i < 4; i++)
             {
-                if (currentRotation[j, i] == 1)
+                if (tetronimoCurrentRotation[j, i] == 1)
                 {
                     if (gridX + 1 > game.noOfCellsX - 1 || game.grid[gridX + 1, gridY] > 0)
                     {
@@ -109,7 +94,7 @@ public class TetronimoController : MonoBehaviour {
         {
             for (int i = 0; i < 4; i++)
             {
-                if (currentRotation[j, i] == 1)
+                if (tetronimoCurrentRotation[j, i] == 1)
                 {
                     if (gridX == 0 || game.grid[gridX - 1, gridY] > 0)
                     {
@@ -123,7 +108,7 @@ public class TetronimoController : MonoBehaviour {
 
     public void updateRenderedPosition()
     {
-            Vector3 pos = new Vector3(0.3f * gridX + 0.15f, -0.3f * gridY + 0.15f);
+            Vector3 pos = new Vector3(gridSize * gridX + (gridSize / 2), -gridSize * gridY + (gridSize/2));
             transform.position = pos;
     }
 
@@ -131,7 +116,7 @@ public class TetronimoController : MonoBehaviour {
     void Update () {
         timeSinceLastDrop += Time.deltaTime;
 
-        if ((timeSinceLastDrop > speed[speedLevel] || Input.GetKeyDown(KeyCode.DownArrow))&& !placed)
+        if ((timeSinceLastDrop > speed[speedLevel] || Input.GetKeyDown(KeyCode.DownArrow)) && !placed)
         {
             if(nothingUnderneath())
             {
@@ -162,19 +147,21 @@ public class TetronimoController : MonoBehaviour {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            rotationCounter = (rotationCounter + 1) % tetronimo.Count;
+            //rotationCounter++;
+            tetronimoCurrentRotation = tetronimo[rotationCounter];
+            //For rendering.
+            tetronimoRenderer.transform.RotateAround(tetronimoRenderer.bounds.center, Vector3.back, 90);
+        }
+
         if (Input.GetKeyDown(KeyCode.A))
         {
-            if (currentRotation == lineRotation1)
-            {
-                currentRotation = lineRotation2;
-                updateRenderedPosition();
-            }
-
-            if (currentRotation == lineRotation2)
-            {
-                currentRotation = lineRotation1;
-                updateRenderedPosition();
-            }
+            rotationCounter = (rotationCounter + tetronimo.Count - 1) % tetronimo.Count;
+            tetronimoCurrentRotation = tetronimo[rotationCounter];
+            //For rendering.
+            tetronimoRenderer.transform.RotateAround(tetronimoRenderer.bounds.center, Vector3.back, -90);
         }
     }
 }
