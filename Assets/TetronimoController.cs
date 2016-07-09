@@ -24,11 +24,13 @@ public class TetronimoController : MonoBehaviour {
     int[,] tetronimoCurrentRotation;
 
     public SpriteRenderer tetronimoRenderer;
+    public Sprite[] sprites = new Sprite[4];
 
     // Use this for initialization
     void Start () {
 		game = GameObject.Find ("Game").GetComponent<GameController> ();
         tetronimoCurrentRotation = tetronimo[rotationCounter];
+        tetronimoRenderer.sprite = sprites[rotationCounter];
         gridX = startX;
         gridY = startY;
         updateRenderedPosition();
@@ -153,7 +155,7 @@ public class TetronimoController : MonoBehaviour {
             //rotationCounter++;
             tetronimoCurrentRotation = tetronimo[rotationCounter];
             //For rendering.
-            tetronimoRenderer.transform.RotateAround(tetronimoRenderer.bounds.center, Vector3.back, 90);
+            tetronimoRenderer.sprite = sprites[rotationCounter];
         }
 
         if (Input.GetKeyDown(KeyCode.A))
@@ -161,7 +163,7 @@ public class TetronimoController : MonoBehaviour {
             rotationCounter = (rotationCounter + tetronimo.Count - 1) % tetronimo.Count;
             tetronimoCurrentRotation = tetronimo[rotationCounter];
             //For rendering.
-            tetronimoRenderer.transform.RotateAround(tetronimoRenderer.bounds.center, Vector3.back, -90);
+            tetronimoRenderer.sprite = sprites[rotationCounter];
         }
     }
 }

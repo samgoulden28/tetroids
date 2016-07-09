@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Text.RegularExpressions;
 
 public class GameController : MonoBehaviour {
 	public Vector3 startPosition;
@@ -20,7 +21,7 @@ public class GameController : MonoBehaviour {
     List<List<int[,]>> possibleBlocks = new List<List<int[,]>>();
     public List<GameObject> placedBlocks = new List<GameObject>();
 
-    public List<Sprite> possibleSprites = new List<Sprite>();
+    private char[] possibleTetronimosForSpriteLoading = { 'I', 'J' };
 
     public int[,] grid;
 
@@ -34,7 +35,7 @@ public class GameController : MonoBehaviour {
     private void setupTetronimos()
     {
         possibleBlocks.Add(BlockDefinitions.I());
-        //possibleBlocks.Add(BlockDefinitions.J());
+        possibleBlocks.Add(BlockDefinitions.J());
         //possibleBlocks.Add(BlockDefinitions.L());
         //possibleBlocks.Add(BlockDefinitions.O());
         //possibleBlocks.Add(BlockDefinitions.S());
@@ -116,8 +117,20 @@ public class GameController : MonoBehaviour {
         print(tetronimo.Count);
         go.GetComponent<TetronimoController>().tetronimo = tetronimo;
 
-        Sprite sprite = possibleSprites[tetronimoID];
-        go.GetComponent<TetronimoController>().tetronimoRenderer.sprite = sprite;
+        print(possibleTetronimosForSpriteLoading);
+        char spritesToLoad = possibleTetronimosForSpriteLoading[tetronimoID];
+
+        Sprite[] sprites = new Sprite[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            String source_file = "tetronimo_images/" + spritesToLoad + "/TetronimoRotation" + (i+1);
+            source_file = Regex.Replace(source_file, @"\s+", "").ToLower();
+            print("Loading: " + source_file);
+            sprites[i] = (Sprite)Resources.Load(source_file, typeof(Sprite));
+        }
+        
+        go.GetComponent<TetronimoController>().sprites = sprites;
     }
 
     // Update is called once per frame
