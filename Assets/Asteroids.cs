@@ -132,7 +132,9 @@ public class Asteroids : MonoBehaviour {
 			}
 		}
         DestroyAsteroid(asteroid);
-		Instantiate(explosionParticlesPrefab, asteroid.position, Quaternion.identity);
+        GameObject explosion = Instantiate<GameObject>(explosionParticlesPrefab);
+        explosion.transform.parent = transform;
+        explosion.transform.localPosition = asteroid.position;
 		GetComponent<AudioSource>().PlayOneShot(destroySound);
     }
 
