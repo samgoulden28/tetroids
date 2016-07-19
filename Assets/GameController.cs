@@ -91,7 +91,6 @@ public class GameController : MonoBehaviour {
             {
                 for (int x = 0; x < noOfCellsX; x++)
                 {
-                    print("Destroying " + x + ", " + y);
                     GameObject.Destroy(placedBlocks[x, y]);
                 }
                 for (int y1 = y; y1 >= 0; y1--)

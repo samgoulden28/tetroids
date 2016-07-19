@@ -107,6 +107,24 @@ public class TetronimoController : MonoBehaviour {
         return true;
     }
 
+    public bool positionOutOfBounds(int[,] futureRotation)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (futureRotation[j, i] == 1)
+                {
+                    if (gridX + i < 0 || gridX + i >= game.noOfCellsX)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public void updateRenderedPosition()
     {
             Vector3 pos = new Vector3(gridSize * gridX + (gridSize / 2), -gridSize * gridY + (gridSize/2));
@@ -150,19 +168,34 @@ public class TetronimoController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            rotationCounter = (rotationCounter + 1) % tetronimo.Count;
-            //rotationCounter++;
-            tetronimoCurrentRotation = tetronimo[rotationCounter];
-            //For rendering.
-            tetronimoRenderer.sprite = sprites[rotationCounter];
+            int potentialRotationCounter = (rotationCounter + 1) % tetronimo.Count;
+            if(!positionOutOfBounds(tetronimo[potentialRotationCounter])) {
+                rotationCounter = potentialRotationCounter;
+                //rotationCounter++;
+                tetronimoCurrentRotation = tetronimo[rotationCounter];
+                //For rendering.
+                tetronimoRenderer.sprite = sprites[rotationCounter];
+            } else
+            {
+                print("Position would have been out of bounds!");
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            rotationCounter = (rotationCounter + tetronimo.Count - 1) % tetronimo.Count;
-            tetronimoCurrentRotation = tetronimo[rotationCounter];
-            //For rendering.
-            tetronimoRenderer.sprite = sprites[rotationCounter];
+            int potentialRotationCounter = (rotationCounter + tetronimo.Count - 1) % tetronimo.Count;
+            if (!positionOutOfBounds(tetronimo[potentialRotationCounter]))
+            {
+                rotationCounter = potentialRotationCounter;
+                //rotationCounter++;
+                tetronimoCurrentRotation = tetronimo[rotationCounter];
+                //For rendering.
+                tetronimoRenderer.sprite = sprites[rotationCounter];
+            }
+            else
+            {
+                print("Position would have been out of bounds!");
+            }
         }
     }
 }
