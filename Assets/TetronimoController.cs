@@ -63,7 +63,6 @@ public class TetronimoController : MonoBehaviour {
                 {
                     if (gridY + j + 1 > game.noOfCellsY - 1 || game.grid[gridX + i, gridY + j + 1] > 0)
                     {
-                        print("PLACE!");
                         return false;
                     }
                 }
@@ -80,7 +79,7 @@ public class TetronimoController : MonoBehaviour {
             {
                 if (tetronimoCurrentRotation[j, i] == 1)
                 {
-                    if (gridX + 1 > game.noOfCellsX - 1 || game.grid[gridX + 1, gridY] > 0)
+                    if (gridX + i + 1 > game.noOfCellsX - 1 || game.grid[gridX + i + 1, gridY + j] > 0)
                     {
                         return false;
                     }
@@ -98,7 +97,7 @@ public class TetronimoController : MonoBehaviour {
             {
                 if (tetronimoCurrentRotation[j, i] == 1)
                 {
-                    if (gridX == 0 || game.grid[gridX - 1, gridY] > 0)
+                    if (gridX + i == 0 || game.grid[gridX + i - 1, gridY + j] > 0)
                     {
                         return false;
                     }
@@ -167,5 +166,3 @@ public class TetronimoController : MonoBehaviour {
         }
     }
 }
-
-

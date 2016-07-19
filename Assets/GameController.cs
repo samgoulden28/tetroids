@@ -19,10 +19,9 @@ public class GameController : MonoBehaviour {
 	float gridHeight;
 
     List<List<int[,]>> possibleBlocks = new List<List<int[,]>>();
-    public List<GameObject> placedBlocks = new List<GameObject>();
+    public GameObject[,] placedBlocks;
 
     private char[] possibleTetronimosForSpriteLoading = { 'I', 'J' };
-
     public int[,] grid;
 
 	// Use this for initialization
@@ -65,6 +64,7 @@ public class GameController : MonoBehaviour {
      */
 
     private void setupGrid() {
+        placedBlocks = new GameObject[noOfCellsX, noOfCellsY];
         grid = new int[noOfCellsX, noOfCellsY];
 		for (int x = 0; x < noOfCellsX; x++) {
 			for (int y = 0; y < noOfCellsY; y++) {
@@ -74,6 +74,48 @@ public class GameController : MonoBehaviour {
         printGrid();
 	}
 
+    public void checkForCompletedLines()
+    {
+        for (int y = 0; y < noOfCellsY; y++)
+        {
+            bool lineCompleted = true;
+            for (int x = 0; x < noOfCellsX; x++)
+            {
+                if (grid[x, y] == 0)
+                {
+                    lineCompleted = false;
+                    break;
+                }
+            }
+            if (lineCompleted)
+            {
+                for (int x = 0; x < noOfCellsX; x++)
+                {
+                    print("Destroying " + x + ", " + y);
+                    GameObject.Destroy(placedBlocks[x, y]);
+                }
+                for (int y1 = y; y1 >= 0; y1--)
+                {
+                    for (int x = 0; x < noOfCellsX; x++)
+                    {
+                        if (y1 == 0)
+                        {
+                            placedBlocks[x, y1] = null;
+                            grid[x, y1] = 0;
+                        }
+                        else
+                        {
+                            if (placedBlocks[x, y1 - 1]) placedBlocks[x, y1 - 1].GetComponent<PlacedBlock>().moveDown();
+                            placedBlocks[x, y1] = placedBlocks[x, y1 - 1];
+                            grid[x, y1] = grid[x, y1 - 1];
+                        }
+                    }
+                }
+                y--;
+            }
+        }
+    }
+
     private void printGrid()
     {
         string s = "";
@@ -81,7 +123,10 @@ public class GameController : MonoBehaviour {
         {
             for (int x = 0; x < noOfCellsX; x++)
             {
-                s += grid[x, y] + ", ";
+                s += x + ", " + y + ": |" + grid[x, y];
+                if (placedBlocks[x, y])
+                    s += "x";
+                s += "| ";
             }
             s += "\n";
         }
@@ -95,14 +140,19 @@ public class GameController : MonoBehaviour {
             for (int y = 0; y < noOfCellsY; y++)
             {
                 if (grid[x, y] == 1) {
-                    placedBlocks.Add((GameObject)Instantiate(blockPrefab, new Vector3(0.3f * x + 0.15f, -0.3f * y + 0.15f), Quaternion.identity));
+                    GameObject go = (GameObject)Instantiate(blockPrefab, new Vector3(0.3f * x + 0.15f, -0.3f * y + 0.15f), Quaternion.identity);
+                    PlacedBlock pb = go.GetComponent<PlacedBlock>();
+                    pb.gridX = x;
+                    pb.gridY = y;
+                    placedBlocks[x, y] = go;
+
+                    //Specify that this spot already has a game object in it.
                     grid[x, y] = 2;
-                    printGrid();
-                } else
-                {
-                }
+                } 
             }
         }
+        checkForCompletedLines();
+        printGrid();
     }
 
     public void destroyGrid()
@@ -114,10 +164,8 @@ public class GameController : MonoBehaviour {
         GameObject go = (GameObject)Instantiate(tetronimoPrefab, Vector3.zero, Quaternion.identity);
         int tetronimoID = UnityEngine.Random.Range(0, possibleBlocks.Count);
         List<int[,]> tetronimo = possibleBlocks[tetronimoID];
-        print(tetronimo.Count);
         go.GetComponent<TetronimoController>().tetronimo = tetronimo;
 
-        print(possibleTetronimosForSpriteLoading);
         char spritesToLoad = possibleTetronimosForSpriteLoading[tetronimoID];
 
         Sprite[] sprites = new Sprite[4];
@@ -137,3 +185,5 @@ public class GameController : MonoBehaviour {
     void Update () {
 	}
 }
+
+
