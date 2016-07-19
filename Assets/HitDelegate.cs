@@ -7,7 +7,7 @@ public class HitDelegate : MonoBehaviour {
 		Asteroid asteroid = asteroids.GetAsteroidForView(gameObject);
 		if (asteroid != null) {
 			asteroids.SplitAsteroid(asteroid);
-			Debug.Log("HIt");
+			Debug.Log("Hit");
 		}
 	}
 }
