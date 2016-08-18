@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour {
     List<List<int[,]>> possibleBlocks = new List<List<int[,]>>();
     public GameObject[,] placedBlocks;
 
-    private char[] possibleTetronimosForSpriteLoading = { 'I', 'J', 'L' };
+    private char[] possibleTetronimosForSpriteLoading = { 'I', 'J' };
     public int[,] grid;
 
 	// Use this for initialization
@@ -35,7 +35,7 @@ public class GameController : MonoBehaviour {
     {
         possibleBlocks.Add(BlockDefinitions.I());
         possibleBlocks.Add(BlockDefinitions.J());
-        possibleBlocks.Add(BlockDefinitions.L());
+        //possibleBlocks.Add(BlockDefinitions.L());
         //possibleBlocks.Add(BlockDefinitions.O());
         //possibleBlocks.Add(BlockDefinitions.S());
         //possibleBlocks.Add(BlockDefinitions.T());
