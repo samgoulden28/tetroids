@@ -26,6 +26,9 @@ public class TetronimoController : MonoBehaviour {
     public SpriteRenderer tetronimoRenderer;
     public Sprite[] sprites = new Sprite[4];
 
+	bool isGameOver;
+
+
     // Use this for initialization
     void Start () {
 		game = GameObject.Find ("Game").GetComponent<GameController> ();
@@ -33,8 +36,29 @@ public class TetronimoController : MonoBehaviour {
         tetronimoRenderer.sprite = sprites[rotationCounter];
         gridX = startX;
         gridY = startY;
+		shiftToHighestPlacedBlock ();
         updateRenderedPosition();
     }
+
+	public void shiftToHighestPlacedBlock() {
+		for (int j = 0; j < 4; j++)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (tetronimoCurrentRotation [j, i] == 1 && game.grid [gridX + i, gridY + j] > 0) {
+					print ("INSIDE!");
+					gridY--;
+					if (!(gridY - 1 + j > 0)) {
+						isGameOver = true;
+					}
+				}
+			}
+		}
+		if (isGameOver)
+			game.gameOver ();
+	}
+
+
 
     public void place()
     {
@@ -42,6 +66,9 @@ public class TetronimoController : MonoBehaviour {
         {
             for (int i = 0; i < 4; i++)
             {
+				if(gridY < 0) {
+					game.gameOver ();
+				}
                 if (tetronimoCurrentRotation[j, i] == 1)
                 {
                     game.grid[gridX + i, gridY + j] = 1;

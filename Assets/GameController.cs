@@ -24,6 +24,8 @@ public class GameController : MonoBehaviour {
     private char[] possibleTetronimosForSpriteLoading = { 'I', 'J' };
     public int[,] grid;
 
+	public GameObject gameOverPrefab;
+
 	// Use this for initialization
 	void Start () {
         setupTetronimos();
@@ -153,6 +155,11 @@ public class GameController : MonoBehaviour {
         checkForCompletedLines();
         printGrid();
     }
+
+	public void gameOver() {
+		print ("Game Over");
+		GameObject.Instantiate (gameOverPrefab, Vector3.zero, Quaternion.identity);
+	}
 
     public void destroyGrid()
     {

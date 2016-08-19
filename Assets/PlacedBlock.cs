@@ -14,7 +14,6 @@ public class PlacedBlock : MonoBehaviour {
 
     public void moveDown()
     {
-        print("Moving " + gridX + ", " + gridY + "down!");
         worldPosition = transform.position;
         worldPosition.y -= 0.3f;
         transform.position = worldPosition;
